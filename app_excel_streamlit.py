@@ -282,8 +282,8 @@ with st.sidebar:
     sep = st.radio("Separator", [",", ";"], horizontal=True, index=1)
     pretty_mode = st.toggle("Pretty format", value=True)
 
-    st.divider()
-    st.metric("Functions loaded", len(mapping))
+    ##st.divider()
+    ##st.metric("Functions loaded", len(mapping))
 
 col1, col2 = st.columns(2)
 
