@@ -95,6 +95,9 @@ def replace_functions(formula, src, tgt, mapping, reverse):
 
 def replace_logic(formula, src, tgt):
     logic_map = {v[src].upper(): k for k, v in LOGICAL_CONSTANTS.items()}
+    if not logic_map:
+        return formula
+
     pattern = re.compile(
         r"\b(" + "|".join(map(re.escape, logic_map.keys())) + r")\b",
         flags=re.IGNORECASE,
@@ -218,7 +221,7 @@ def copy_button(text: str):
         justify-content:center;
         align-items:center;
         gap:12px;
-        margin-top: 2px;
+        margin-top:2px;
     ">
         <button id="copy-btn"
             style="
@@ -226,8 +229,8 @@ def copy_button(text: str):
                 height:40px;
                 padding:0 24px;
                 border-radius:999px;
-                background:#3d9e9d;
                 border:none;
+                background:#3d9e9d;
                 color:white;
                 cursor:pointer;
                 font-size:16px;
@@ -235,7 +238,6 @@ def copy_button(text: str):
                 display:inline-flex;
                 align-items:center;
                 justify-content:center;
-                transition:all 0.2s ease;
             ">
             Copy
         </button>
@@ -245,7 +247,7 @@ def copy_button(text: str):
                 display:none;
                 color:#16a34a;
                 font-weight:600;
-                font-size:16px;
+                font-size:15px;
             ">
             Formula copied!
         </span>
@@ -264,7 +266,6 @@ def copy_button(text: str):
             setTimeout(function () {
                 msg.style.display = "none";
             }, 1500);
-
         } catch (err) {
             msg.innerText = "Copy failed";
             msg.style.color = "#dc2626";
@@ -285,42 +286,18 @@ def copy_button(text: str):
 
 st.set_page_config(page_title="Excel Formula Translator", page_icon="🔁", layout="wide")
 
-col_logo, col_title = st.columns([0.7, 9.3], gap="small")
-
-with col_logo:
-    st.image("logo_xanh.png", width=80)
-
-with col_title:
-    st.markdown(
-        """
-        <div style="
-            display:flex;
-            align-items:center;
-            height:95px;
-            margin-left:-28px;
-        ">
-            <h1 style="
-                margin:0;
-                color:#3d9e9d;
-            ">
-                Excel Formula Translator
-            </h1>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
 st.markdown(
     """
     <style>
-    div[data-testid="stTextArea"] textarea {
-        color: rgb(17, 24, 39) !important;
-        -webkit-text-fill-color: rgb(17, 24, 39) !important;
+    div[data-testid="stTextArea"] textarea,
+    div[data-testid="stTextArea"] textarea:disabled {
+        color: #111827 !important;
+        -webkit-text-fill-color: #111827 !important;
         opacity: 1 !important;
     }
 
     div[data-testid="stTextArea"] label {
-        color: rgb(17, 24, 39) !important;
+        color: #111827 !important;
     }
 
     div[data-testid="stTextArea"] label p {
@@ -339,11 +316,11 @@ st.markdown(
     }
 
     div[data-testid="stButton"] > button {
-        border-radius: 999px !important;
         min-width: 140px !important;
         width: 140px !important;
         height: 40px !important;
         padding: 0 24px !important;
+        border-radius: 999px !important;
         font-size: 16px !important;
         font-weight: 500 !important;
         display: inline-flex !important;
@@ -351,18 +328,6 @@ st.markdown(
         justify-content: center !important;
         box-shadow: none !important;
     }
-
-    div[data-testid="stButton"] > button[kind="primary"] {
-        background: #3d9e9d  !important;
-        border: 1px solid #3d9e9d !important;
-        color: white !important;
-    }
-
-    div[data-testid="stButton"] > button[kind="primary"]:hover {
-        background: #348b8a !important;
-        border-color: #348b8a !important;
-    }
-
     </style>
     """,
     unsafe_allow_html=True,
@@ -377,7 +342,28 @@ except Exception as e:
 
 if "translated_result" not in st.session_state:
     st.session_state.translated_result = ""
-    
+
+col_logo, col_title = st.columns([0.7, 9.3], gap="small")
+
+with col_logo:
+    st.image("logo_xanh.png", width=95)
+
+with col_title:
+    st.markdown(
+        """
+        <div style="
+            display:flex;
+            align-items:center;
+            height:95px;
+            margin-left:-32px;
+        ">
+            <h1 style="margin:0; color:#3d9e9d;">
+                Excel Formula Translator
+            </h1>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 with st.sidebar:
     src = st.selectbox("Source language", SUPPORTED_LANGS)
@@ -385,8 +371,8 @@ with st.sidebar:
     sep = st.radio("Separator", [",", ";"], horizontal=True, index=1)
     pretty_mode = st.toggle("Pretty format", value=True)
 
-col1, col2 = st.columns(2, gap="small")
 HEIGHT = 320
+col1, col2 = st.columns(2, gap="small")
 
 with col1:
     formula = st.text_area(
@@ -422,8 +408,7 @@ if run:
             formula, src, tgt, sep, pretty_mode, mapping, reverse
         )
         st.rerun()
-
-
+        
 st.markdown(
     """
     <hr style="margin-top:40px; margin-bottom:10px;">
