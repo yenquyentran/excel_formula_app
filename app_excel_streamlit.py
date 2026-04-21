@@ -422,3 +422,25 @@ if run:
             formula, src, tgt, sep, pretty_mode, mapping, reverse
         )
         st.rerun()
+
+
+st.markdown(
+    """
+    <hr style="margin-top:40px; margin-bottom:10px;">
+
+    <div style="
+        text-align:center;
+        color:#6b7280;
+        font-size:14px;
+    ">
+        This product is developed by 
+        <b style="color:#3d9e9d;">Quyendatahub</b>. 
+        Visit 
+        <a href="https://quyendatahub.com" target="_blank" style="color:#3d9e9d; text-decoration:none;">
+            quyendatahub.com
+        </a> 
+        for more data analytics tools and courses.
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
