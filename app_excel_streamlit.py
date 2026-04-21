@@ -378,7 +378,7 @@ with col1:
     formula = st.text_area(
         "Input formula",
         height=HEIGHT,
-        placeholder='Ví dụ: =IF(SUM(A1,B1)>10,VLOOKUP(C1,Sheet2!A:B,2,FALSE),"No")',
+        placeholder='Example: =IF(SUM(A1,B1)>10,VLOOKUP(C1,Sheet2!A:B,2,FALSE),"No")',
     )
 
 with col2:
