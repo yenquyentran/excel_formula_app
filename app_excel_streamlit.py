@@ -71,6 +71,9 @@ def split_string(formula):
 
 def replace_functions(formula, src, tgt, mapping, reverse):
     funcs = sorted(reverse[src].keys(), key=len, reverse=True)
+    if not funcs:
+        return formula
+
     pattern = re.compile(
         r"\b(" + "|".join(map(re.escape, funcs)) + r")(?=\s*\()",
         flags=re.IGNORECASE,
@@ -209,17 +212,30 @@ def copy_button(text: str):
     payload = json.dumps(text)
 
     html = """
-    <div style="margin-top: 8px;">
+    <div style="
+        width:100%;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        gap:12px;
+        margin-top: 2px;
+    ">
         <button id="copy-btn"
             style="
-                background:#ff4b4b;
-                color:white;
+                min-width:140px;
+                height:40px;
+                padding:0 24px;
+                border-radius:999px;
+                background:#3d9e9d;
                 border:none;
-                padding:10px 14px;
-                border-radius:8px;
+                color:white;
                 cursor:pointer;
-                font-size:14px;
-                font-weight:600;
+                font-size:16px;
+                font-weight:500;
+                display:inline-flex;
+                align-items:center;
+                justify-content:center;
+                transition:all 0.2s ease;
             ">
             Copy
         </button>
@@ -227,10 +243,9 @@ def copy_button(text: str):
         <span id="copy-msg"
             style="
                 display:none;
-                margin-left:10px;
                 color:#16a34a;
                 font-weight:600;
-                font-size:14px;
+                font-size:16px;
             ">
             Formula copied!
         </span>
@@ -245,27 +260,113 @@ def copy_button(text: str):
         try {
             await navigator.clipboard.writeText(textToCopy);
             msg.style.display = "inline";
+
             setTimeout(function () {
                 msg.style.display = "none";
             }, 1500);
+
         } catch (err) {
-            msg.style.display = "inline";
-            msg.style.color = "#dc2626";
             msg.innerText = "Copy failed";
+            msg.style.color = "#dc2626";
+            msg.style.display = "inline";
+
             setTimeout(function () {
                 msg.style.display = "none";
-                msg.style.color = "#16a34a";
                 msg.innerText = "Formula copied!";
+                msg.style.color = "#16a34a";
             }, 1500);
         }
     });
     </script>
     """.replace("PAYLOAD_TEXT", payload)
 
-    components.html(html, height=70)
+    components.html(html, height=60)
 
 
 st.set_page_config(page_title="Excel Formula Translator", page_icon="🔁", layout="wide")
+
+col_logo, col_title = st.columns([0.7, 9.3], gap="small")
+
+with col_logo:
+    st.image("logo_xanh.png", width=80)
+
+with col_title:
+    st.markdown(
+        """
+        <div style="
+            display:flex;
+            align-items:center;
+            height:95px;
+            margin-left:-28px;
+        ">
+            <h1 style="
+                margin:0;
+                color:#3d9e9d;
+            ">
+                Excel Formula Translator
+            </h1>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+st.markdown(
+    """
+    <style>
+    div[data-testid="stTextArea"] textarea {
+        color: rgb(17, 24, 39) !important;
+        -webkit-text-fill-color: rgb(17, 24, 39) !important;
+        opacity: 1 !important;
+    }
+
+    div[data-testid="stTextArea"] label {
+        color: rgb(17, 24, 39) !important;
+    }
+
+    div[data-testid="stTextArea"] label p {
+        font-size: 0.875rem !important;
+    }
+
+    div[data-testid="stTextArea"] textarea::placeholder {
+        color: #9ca3af !important;
+        opacity: 1 !important;
+        font-style: italic;
+    }
+
+    div[data-testid="stButton"] {
+        display: flex;
+        justify-content: center;
+    }
+
+    div[data-testid="stButton"] > button {
+        border-radius: 999px !important;
+        min-width: 140px !important;
+        width: 140px !important;
+        height: 40px !important;
+        padding: 0 24px !important;
+        font-size: 16px !important;
+        font-weight: 500 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow: none !important;
+    }
+
+    div[data-testid="stButton"] > button[kind="primary"] {
+        background: #3d9e9d  !important;
+        border: 1px solid #3d9e9d !important;
+        color: white !important;
+    }
+
+    div[data-testid="stButton"] > button[kind="primary"]:hover {
+        background: #348b8a !important;
+        border-color: #348b8a !important;
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 try:
     mapping = load_mapping()
@@ -274,7 +375,9 @@ except Exception as e:
     st.error(f"Lỗi đọc file Excel: {e}")
     st.stop()
 
-st.title("🔁 Excel Formula Translator")
+if "translated_result" not in st.session_state:
+    st.session_state.translated_result = ""
+    
 
 with st.sidebar:
     src = st.selectbox("Source language", SUPPORTED_LANGS)
@@ -282,26 +385,40 @@ with st.sidebar:
     sep = st.radio("Separator", [",", ";"], horizontal=True, index=1)
     pretty_mode = st.toggle("Pretty format", value=True)
 
-    ##st.divider()
-    ##st.metric("Functions loaded", len(mapping))
-
-col1, col2 = st.columns(2)
+col1, col2 = st.columns(2, gap="small")
+HEIGHT = 320
 
 with col1:
     formula = st.text_area(
         "Input formula",
-        height=320,
+        height=HEIGHT,
         placeholder='Ví dụ: =IF(SUM(A1,B1)>10,VLOOKUP(C1,Sheet2!A:B,2,FALSE),"No")',
     )
-    run = st.button("Translate", type="primary", use_container_width=True)
 
 with col2:
-    if run:
-        if not formula.strip():
-            st.warning("Nhập công thức trước.")
-        else:
-            result = translate(formula, src, tgt, sep, pretty_mode, mapping, reverse)
-            st.text_area("Translated formula", result, height=320)
-            copy_button(result)
+    st.text_area(
+        "Translated formula",
+        st.session_state.translated_result,
+        height=HEIGHT,
+        disabled=True,
+    )
+
+btn_col1, btn_col2 = st.columns(2, gap="small")
+
+with btn_col1:
+    left_pad, center_btn, right_pad = st.columns([2, 1, 2])
+    with center_btn:
+        run = st.button("Translate", type="primary")
+
+with btn_col2:
+    if st.session_state.translated_result:
+        copy_button(st.session_state.translated_result)
+
+if run:
+    if not formula.strip():
+        st.warning("Nhập công thức trước.")
     else:
-        st.info("Nhập công thức rồi bấm Translate.")
+        st.session_state.translated_result = translate(
+            formula, src, tgt, sep, pretty_mode, mapping, reverse
+        )
+        st.rerun()
