@@ -607,7 +607,7 @@ with btn_col2:
 
 if run:
     if not formula.strip():
-        st.warning("Nhập công thức trước.")
+        st.warning("Please input your formula!")
     else:
         st.session_state.translated_result = translate(
             formula, src, tgt, sep, pretty_mode, mapping, reverse
