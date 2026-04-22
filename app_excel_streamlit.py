@@ -13,7 +13,7 @@ SUPPORTED_LANGS = ["English", "German", "French"]
 
 LOGICAL_CONSTANTS = {
     "TRUE": {"English": "TRUE", "German": "WAHR", "French": "VRAI"},
-    "FALSE": {"English": "TRUE", "German": "FALSCH", "French": "FAUX"},
+    "FALSE": {"English": "FALSE", "German": "FALSCH", "French": "FAUX"},
 }
 
 
