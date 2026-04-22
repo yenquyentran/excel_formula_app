@@ -315,7 +315,7 @@ def copy_button(text: str):
     components.html(html, height=60)
 
 
-st.set_page_config(page_title="Excel Formula Translator", page_icon="🔁", layout="wide")
+st.set_page_config(page_title="Excel Formula Translator", page_icon="logo_xanh.png", layout="wide")
 
 st.markdown(
     """
