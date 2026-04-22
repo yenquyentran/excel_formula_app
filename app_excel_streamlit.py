@@ -353,27 +353,24 @@ div[data-testid="stTextArea"] label p {
     font-size: 0.875rem !important;
 }
 
-/* Text color for both boxes */
-div[data-testid="stTextArea"] textarea,
-div[data-testid="stTextArea"] textarea:disabled {
+/* ===== INPUT BOX (ALL textareas) ===== */
+
+/* textarea */
+div[data-testid="stTextArea"] textarea {
+    background: #ffffff !important;
     color: #111827 !important;
     -webkit-text-fill-color: #111827 !important;
     opacity: 1 !important;
     font-size: 15px !important;
-}
 
-/* ===== INPUT BOX ===== */
-/* target by key */
-div[data-testid="stTextArea"] textarea[aria-label="Input formula"] {
-    background: #ffffff !important;
     border: none !important;
     outline: none !important;
     box-shadow: none !important;
     padding: 12px !important;
 }
 
-/* outer wrapper of input */
-div[data-testid="stTextArea"]:has(textarea[aria-label="Input formula"]) > div {
+/* outer wrapper */
+div[data-testid="stTextArea"] > div {
     background: #ffffff !important;
     border: 1px solid #d1d5db !important;
     border-radius: 14px !important;
@@ -381,37 +378,20 @@ div[data-testid="stTextArea"]:has(textarea[aria-label="Input formula"]) > div {
     overflow: hidden !important;
 }
 
-/* focus state */
-div[data-testid="stTextArea"]:has(textarea[aria-label="Input formula"]) > div:focus-within {
+/* focus */
+div[data-testid="stTextArea"] > div:focus-within {
     border: 1px solid #3d9e9d !important;
     box-shadow: 0 0 0 2px rgba(61,158,157,0.15) !important;
 }
 
 /* placeholder */
-div[data-testid="stTextArea"] textarea[aria-label="Input formula"]::placeholder {
-    color: #9ca3af !important;
+div[data-testid="stTextArea"] textarea::placeholder {
+    color: #6b7280 !important;
     opacity: 1 !important;
-    font-style: italic;
+    font-style: italic !important;
 }
 
-/* ===== OUTPUT BOX ===== */
-div[data-testid="stTextArea"]:has(textarea[aria-label="Translated formula"]) > div {
-    background: #f0f2f6 !important;
-    border: none !important;
-    border-radius: 14px !important;
-    box-shadow: none !important;
-    overflow: hidden !important;
-}
-
-div[data-testid="stTextArea"] textarea[aria-label="Translated formula"],
-div[data-testid="stTextArea"] textarea[aria-label="Translated formula"]:disabled {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 12px !important;
-}
-
-/* Translate button */
+/* ===== TRANSLATE BUTTON ===== */
 div[data-testid="stButton"] {
     display: flex;
     justify-content: center;
@@ -567,14 +547,17 @@ col1, col2 = st.columns(2, gap="small")
 
 with col1:
     formula = st.text_area(
-        "Input formula",
+         "Input formula",
         height=HEIGHT,
         placeholder='Example: =IF(SUM(A1,B1)>10,VLOOKUP(C1,Sheet2!A:B,2,FALSE),"No") \n or: =mid() \n or: today()',
         key="input_formula_box",
     )
 
 with col2:
-    st.markdown('<div class="output-label">Translated formula</div>', unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="output-label">Translated formula - {tgt}</div>',
+        unsafe_allow_html=True
+    )
 
     if st.session_state.translated_result:
         highlighted = highlight_formula(
@@ -607,7 +590,7 @@ with btn_col2:
 
 if run:
     if not formula.strip():
-        st.warning("Please input your formula!")
+        st.warning("Please input your formula")
     else:
         st.session_state.translated_result = translate(
             formula, src, tgt, sep, pretty_mode, mapping, reverse
