@@ -7,6 +7,8 @@ import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 
+import base64
+
 EXCEL_FILE = Path("Excel Formula.xlsx")
 SHEET_NAME = "Sheet1"
 SUPPORTED_LANGS = ["English", "German", "French"]
@@ -214,15 +216,26 @@ def translate_single_function_name(formula, src, tgt, mapping, reverse):
 def translate(formula, src, tgt, sep, pretty_mode, mapping, reverse):
     raw = formula.strip()
 
+    # 🔥 Detect dấu '='
+    has_equal = raw.startswith("=")
+    if has_equal:
+        raw = raw[1:]  # bỏ '=' đi
+
+    # 🔹 case chỉ nhập tên hàm (IF, SUM,...)
     single_func = translate_single_function_name(raw, src, tgt, mapping, reverse)
     if single_func is not None:
-        return single_func
+        return "=" + single_func if has_equal else single_func
 
-    formula = replace_functions(formula, src, tgt, mapping, reverse)
+    # 🔹 xử lý bình thường
+    formula = replace_functions(raw, src, tgt, mapping, reverse)
     formula = replace_logic(formula, src, tgt)
     formula = replace_separator(formula, sep)
     formula = compact_formula(formula, sep)
-    return pretty_formula(formula) if pretty_mode else formula
+
+    result = pretty_formula(formula) if pretty_mode else formula
+
+    # 🔥 add lại '=' nếu có
+    return "=" + result if has_equal else result
 
 
 def copy_button(text: str):
@@ -252,7 +265,12 @@ def copy_button(text: str):
                 display:inline-flex;
                 align-items:center;
                 justify-content:center;
-            ">
+                box-shadow:0 6px 16px rgba(61, 158, 157, 0.35);
+                transition:all 0.2s ease;
+            "
+            onmouseover="this.style.background='#348b8a'; this.style.boxShadow='0 8px 20px rgba(61, 158, 157, 0.45)'"
+            onmouseout="this.style.background='#3d9e9d'; this.style.boxShadow='0 6px 16px rgba(61, 158, 157, 0.35)'"
+            >
             Copy
         </button>
 
@@ -303,13 +321,7 @@ st.set_page_config(page_title="Excel Formula Translator", page_icon="🔁", layo
 st.markdown(
     """
     <style>
-    div[data-testid="stTextArea"] textarea,
-    div[data-testid="stTextArea"] textarea:disabled {
-        color: #111827 !important;
-        -webkit-text-fill-color: #111827 !important;
-        opacity: 1 !important;
-    }
-
+    /* Label */
     div[data-testid="stTextArea"] label {
         color: #111827 !important;
     }
@@ -318,12 +330,69 @@ st.markdown(
         font-size: 0.875rem !important;
     }
 
-    div[data-testid="stTextArea"] textarea::placeholder {
+    /* Text màu đen cho cả 2 box */
+    div[data-testid="stTextArea"] textarea,
+    div[data-testid="stTextArea"] textarea:disabled {
+        color: #111827 !important;
+        -webkit-text-fill-color: #111827 !important;
+        opacity: 1 !important;
+        font-size: 15px !important;
+    }
+
+    /* INPUT FORMULA: style wrapper ngoài */
+    div[data-testid="stTextArea"]:first-of-type > div {
+        background: #ffffff !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 14px !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05) !important;
+        overflow: hidden !important;
+    }
+
+    /* INPUT FORMULA: textarea bên trong không còn border riêng */
+    div[data-testid="stTextArea"]:first-of-type textarea {
+        background: transparent !important;
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        padding: 12px !important;
+    }
+
+    div[data-testid="stTextArea"]:first-of-type textarea:focus {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Focus cho wrapper ngoài */
+    div[data-testid="stTextArea"]:first-of-type > div:focus-within {
+        border: 1px solid #3d9e9d !important;
+        box-shadow: 0 0 0 2px rgba(61,158,157,0.15) !important;
+    }
+
+    div[data-testid="stTextArea"]:first-of-type textarea::placeholder {
         color: #9ca3af !important;
         opacity: 1 !important;
         font-style: italic;
     }
 
+    /* OUTPUT FORMULA: giữ nền xám */
+    div[data-testid="stTextArea"]:nth-of-type(2) > div {
+        background: #f0f2f6 !important;
+        border: none !important;
+        border-radius: 14px !important;
+        box-shadow: none !important;
+        overflow: hidden !important;
+    }
+
+    div[data-testid="stTextArea"]:nth-of-type(2) textarea,
+    div[data-testid="stTextArea"]:nth-of-type(2) textarea:disabled {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 12px !important;
+    }
+
+    /* Translate button */
     div[data-testid="stButton"] {
         display: flex;
         justify-content: center;
@@ -340,7 +409,16 @@ st.markdown(
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
-        box-shadow: none !important;
+        background: #3d9e9d !important;
+        color: white !important;
+        border: none !important;
+        box-shadow: 0 6px 16px rgba(61, 158, 157, 0.35) !important;
+        transition: all 0.2s ease !important;
+    }
+
+    div[data-testid="stButton"] > button:hover {
+        background: #348b8a !important;
+        box-shadow: 0 8px 20px rgba(61, 158, 157, 0.45) !important;
     }
     </style>
     """,
@@ -357,28 +435,31 @@ except Exception as e:
 if "translated_result" not in st.session_state:
     st.session_state.translated_result = ""
 
-col_logo, col_title = st.columns([0.7, 9.3], gap="small")
+with open("logo_xanh.png", "rb") as f:
+    logo_base64 = base64.b64encode(f.read()).decode()
 
-with col_logo:
-    st.image("logo_xanh.png", width=95)
+st.markdown(
+    f"""
+    <div style="text-align:center; margin-top:10px;">
+        <img src="data:image/png;base64,{logo_base64}"
+             style="width:80px; border-radius:16px;" />
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
-with col_title:
-    st.markdown(
-        """
-        <div style="
-            display:flex;
-            align-items:center;
-            height:95px;
-            margin-left:-32px;
-        ">
-            <h1 style="margin:0; color:#3d9e9d;">
-                Excel Formula Translator
-            </h1>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
+st.markdown(
+    """
+    <h1 style="
+        margin: 10px 0 20px 0;
+        color: #3d9e9d;
+        text-align: center;
+    ">
+        Excel Formula Translator
+    </h1>
+    """,
+    unsafe_allow_html=True,
+)
 with st.sidebar:
     src = st.selectbox("Source language", SUPPORTED_LANGS)
     tgt = st.selectbox("Target language", SUPPORTED_LANGS, index=2)
@@ -392,7 +473,8 @@ with col1:
     formula = st.text_area(
         "Input formula",
         height=HEIGHT,
-        placeholder='Ví dụ: =IF(SUM(A1,B1)>10,VLOOKUP(C1,Sheet2!A:B,2,FALSE),"No")',
+        placeholder='Example: =IF(SUM(A1,B1)>10,VLOOKUP(C1,Sheet2!A:B,2,FALSE),"No") \n or: =mid() \n or: today()',
+        key="input_formula_box",
     )
 
 with col2:
