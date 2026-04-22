@@ -13,7 +13,7 @@ SUPPORTED_LANGS = ["English", "German", "French"]
 
 LOGICAL_CONSTANTS = {
     "TRUE": {"English": "TRUE", "German": "WAHR", "French": "VRAI"},
-    "FALSE": {"English": "FALSE", "German": "FALSCH", "French": "FAUX"},
+    "FALSE": {"English": "TRUE", "German": "FALSCH", "French": "FAUX"},
 }
 
 
@@ -203,7 +203,21 @@ def pretty_formula(formula):
     return formatted.strip()
 
 
+def translate_single_function_name(formula, src, tgt, mapping, reverse):
+    token = formula.strip().upper()
+    if token in reverse[src]:
+        en_name = reverse[src][token]
+        return mapping[en_name][tgt]
+    return None
+
+
 def translate(formula, src, tgt, sep, pretty_mode, mapping, reverse):
+    raw = formula.strip()
+
+    single_func = translate_single_function_name(raw, src, tgt, mapping, reverse)
+    if single_func is not None:
+        return single_func
+
     formula = replace_functions(formula, src, tgt, mapping, reverse)
     formula = replace_logic(formula, src, tgt)
     formula = replace_separator(formula, sep)
@@ -378,7 +392,7 @@ with col1:
     formula = st.text_area(
         "Input formula",
         height=HEIGHT,
-        placeholder='Example: =IF(SUM(A1,B1)>10,VLOOKUP(C1,Sheet2!A:B,2,FALSE),"No")',
+        placeholder='Ví dụ: =IF(SUM(A1,B1)>10,VLOOKUP(C1,Sheet2!A:B,2,FALSE),"No")',
     )
 
 with col2:
@@ -408,7 +422,7 @@ if run:
             formula, src, tgt, sep, pretty_mode, mapping, reverse
         )
         st.rerun()
-        
+
 st.markdown(
     """
     <hr style="margin-top:40px; margin-bottom:10px;">
