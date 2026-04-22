@@ -317,112 +317,104 @@ def copy_button(text: str):
 
 st.set_page_config(page_title="Excel Formula Translator", page_icon="logo_xanh.png", layout="wide")
 
-st.markdown(
-    """
-    <style>
-    /* Label */
-    div[data-testid="stTextArea"] label {
-        color: #111827 !important;
-    }
+st.markdown("""
+<style>
+/* Label */
+div[data-testid="stTextArea"] label {
+    color: #111827 !important;
+}
+div[data-testid="stTextArea"] label p {
+    font-size: 0.875rem !important;
+}
 
-    div[data-testid="stTextArea"] label p {
-        font-size: 0.875rem !important;
-    }
+/* Text color for both boxes */
+div[data-testid="stTextArea"] textarea,
+div[data-testid="stTextArea"] textarea:disabled {
+    color: #111827 !important;
+    -webkit-text-fill-color: #111827 !important;
+    opacity: 1 !important;
+    font-size: 15px !important;
+}
 
-    /* Text màu đen cho cả 2 box */
-    div[data-testid="stTextArea"] textarea,
-    div[data-testid="stTextArea"] textarea:disabled {
-        color: #111827 !important;
-        -webkit-text-fill-color: #111827 !important;
-        opacity: 1 !important;
-        font-size: 15px !important;
-    }
+/* ===== INPUT BOX ===== */
+/* target by key */
+div[data-testid="stTextArea"] textarea[aria-label="Input formula"] {
+    background: #ffffff !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    padding: 12px !important;
+}
 
-    /* INPUT FORMULA: style wrapper ngoài */
-    div[data-testid="stTextArea"]:first-of-type > div {
-        background: #ffffff !important;
-        border: 1px solid #d1d5db !important;
-        border-radius: 14px !important;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05) !important;
-        overflow: hidden !important;
-    }
+/* outer wrapper of input */
+div[data-testid="stTextArea"]:has(textarea[aria-label="Input formula"]) > div {
+    background: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 14px !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05) !important;
+    overflow: hidden !important;
+}
 
-    /* INPUT FORMULA: textarea bên trong không còn border riêng */
-    div[data-testid="stTextArea"]:first-of-type textarea {
-        background: transparent !important;
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
-        padding: 12px !important;
-    }
+/* focus state */
+div[data-testid="stTextArea"]:has(textarea[aria-label="Input formula"]) > div:focus-within {
+    border: 1px solid #3d9e9d !important;
+    box-shadow: 0 0 0 2px rgba(61,158,157,0.15) !important;
+}
 
-    div[data-testid="stTextArea"]:first-of-type textarea:focus {
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
-    }
+/* placeholder */
+div[data-testid="stTextArea"] textarea[aria-label="Input formula"]::placeholder {
+    color: #9ca3af !important;
+    opacity: 1 !important;
+    font-style: italic;
+}
 
-    /* Focus cho wrapper ngoài */
-    div[data-testid="stTextArea"]:first-of-type > div:focus-within {
-        border: 1px solid #3d9e9d !important;
-        box-shadow: 0 0 0 2px rgba(61,158,157,0.15) !important;
-    }
+/* ===== OUTPUT BOX ===== */
+div[data-testid="stTextArea"]:has(textarea[aria-label="Translated formula"]) > div {
+    background: #f0f2f6 !important;
+    border: none !important;
+    border-radius: 14px !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+}
 
-    div[data-testid="stTextArea"]:first-of-type textarea::placeholder {
-        color: #9ca3af !important;
-        opacity: 1 !important;
-        font-style: italic;
-    }
+div[data-testid="stTextArea"] textarea[aria-label="Translated formula"],
+div[data-testid="stTextArea"] textarea[aria-label="Translated formula"]:disabled {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 12px !important;
+}
 
-    /* OUTPUT FORMULA: giữ nền xám */
-    div[data-testid="stTextArea"]:nth-of-type(2) > div {
-        background: #f0f2f6 !important;
-        border: none !important;
-        border-radius: 14px !important;
-        box-shadow: none !important;
-        overflow: hidden !important;
-    }
+/* Translate button */
+div[data-testid="stButton"] {
+    display: flex;
+    justify-content: center;
+}
 
-    div[data-testid="stTextArea"]:nth-of-type(2) textarea,
-    div[data-testid="stTextArea"]:nth-of-type(2) textarea:disabled {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        padding: 12px !important;
-    }
+div[data-testid="stButton"] > button {
+    min-width: 140px !important;
+    width: 140px !important;
+    height: 40px !important;
+    padding: 0 24px !important;
+    border-radius: 999px !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #3d9e9d !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 6px 16px rgba(61, 158, 157, 0.35) !important;
+    transition: all 0.2s ease !important;
+}
 
-    /* Translate button */
-    div[data-testid="stButton"] {
-        display: flex;
-        justify-content: center;
-    }
-
-    div[data-testid="stButton"] > button {
-        min-width: 140px !important;
-        width: 140px !important;
-        height: 40px !important;
-        padding: 0 24px !important;
-        border-radius: 999px !important;
-        font-size: 16px !important;
-        font-weight: 500 !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        background: #3d9e9d !important;
-        color: white !important;
-        border: none !important;
-        box-shadow: 0 6px 16px rgba(61, 158, 157, 0.35) !important;
-        transition: all 0.2s ease !important;
-    }
-
-    div[data-testid="stButton"] > button:hover {
-        background: #348b8a !important;
-        box-shadow: 0 8px 20px rgba(61, 158, 157, 0.45) !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+div[data-testid="stButton"] > button:hover {
+    background: #348b8a !important;
+    box-shadow: 0 8px 20px rgba(61, 158, 157, 0.45) !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 try:
     mapping = load_mapping()
