@@ -460,9 +460,41 @@ st.markdown(
     unsafe_allow_html=True,
 )
 with st.sidebar:
+    st.markdown("### Language")
     src = st.selectbox("Source language", SUPPORTED_LANGS)
     tgt = st.selectbox("Target language", SUPPORTED_LANGS, index=2)
-    sep = st.radio("Separator", [",", ";"], horizontal=True, index=1)
+    
+    st.markdown("<hr style='margin:20px 0; opacity:0.3;'>", unsafe_allow_html=True)
+    
+    st.markdown("### Format")
+    st.markdown("Argument separator")
+
+    sep = st.radio(
+        "",
+        [",", ";"],
+        horizontal=False,
+        index=1,
+        label_visibility="collapsed"
+    )
+    
+
+    st.markdown("""
+<style>
+div[role="radiogroup"] > label {
+    background: #f3f4f6;
+    padding: 6px 12px;
+    border-radius: 999px;
+    margin-right: 6px;
+    cursor: pointer;
+}
+
+div[role="radiogroup"] > label[data-checked="true"] {
+    background: #3d9e9d;
+    color: white;
+}
+</style>
+""", unsafe_allow_html=True)
+    
     pretty_mode = st.toggle("Pretty format", value=True)
 
 HEIGHT = 320
