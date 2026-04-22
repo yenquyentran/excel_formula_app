@@ -274,15 +274,16 @@ def copy_button(text: str):
         </button>
 
         <span id="copy-msg"
-            style="
-                display:none;
-                color:#16a34a;
-                font-weight:600;
-                font-size:15px;
-            ">
-            Formula copied!
-        </span>
-    </div>
+    style="
+        display:none;
+        color:#3d9e9d;
+        font-weight:400;
+        font-size:15px;
+        line-height:1.5;
+        font-family:sans-serif;
+    ">
+    Formula copied!
+</span>
 
     <script>
     const textToCopy = PAYLOAD_TEXT;
@@ -305,7 +306,7 @@ def copy_button(text: str):
             setTimeout(function () {
                 msg.style.display = "none";
                 msg.innerText = "Formula copied!";
-                msg.style.color = "#16a34a";
+                msg.style.color = "#3d9e9d";
             }, 1500);
         }
     });
@@ -313,6 +314,31 @@ def copy_button(text: str):
     """.replace("PAYLOAD_TEXT", payload)
 
     components.html(html, height=60)
+    
+def highlight_formula(formula, tgt, mapping):
+    # Get all function names in target language
+    funcs = sorted(
+        {v[tgt] for v in mapping.values()},
+        key=len,
+        reverse=True
+    )
+
+    pattern = re.compile(
+        r"\b(" + "|".join(map(re.escape, funcs)) + r")(?=\s*\()",
+        flags=re.IGNORECASE
+    )
+
+    def replacer(m):
+        return f'<span class="func">{m.group(1)}</span>'
+
+    parts = []
+    for is_str, part in split_string(formula):
+        if is_str:
+            parts.append(part)  # don't highlight inside strings
+        else:
+            parts.append(pattern.sub(replacer, part))
+
+    return "".join(parts)
 
 
 st.set_page_config(page_title="Excel Formula Translator", page_icon="logo_xanh.png", layout="wide")
@@ -416,6 +442,53 @@ div[data-testid="stButton"] > button:hover {
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+.output-label {
+    color: #111827;
+    font-size: 0.875rem;
+    font-weight: 400;
+    margin-bottom: 0.25rem;
+}
+
+.output-box {
+    background: #f0f2f6;
+    border: 1px solid #d1d5db;
+    border-radius: 14px;
+    box-shadow: none;
+    box-sizing: border-box;
+
+    height: 295px;
+    width: 100%;
+    overflow-y: auto;
+
+    padding: 12px 14px;
+
+    color: #111827;
+    font-size: 15px;
+    line-height: 1.5;
+    font-family: sans-serif;
+    white-space: pre-wrap;
+}
+
+/* function names */
+.output-box .func {
+    color: #3d9e9d;
+    font-weight: normal;
+}
+
+/* copy message */
+.copy-msg {
+    display: none;
+    color: #3d9e9d;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 1.5;
+    font-family: sans-serif;
+}
+</style>
+""", unsafe_allow_html=True)
+
 try:
     mapping = load_mapping()
     reverse = build_reverse_lookup(mapping)
@@ -501,12 +574,25 @@ with col1:
     )
 
 with col2:
-    st.text_area(
-        "Translated formula",
-        st.session_state.translated_result,
-        height=HEIGHT,
-        disabled=True,
-    )
+    st.markdown('<div class="output-label">Translated formula</div>', unsafe_allow_html=True)
+
+    if st.session_state.translated_result:
+        highlighted = highlight_formula(
+            st.session_state.translated_result, tgt, mapping
+        )
+        highlighted_html = highlighted.replace("\n", "<br>")
+
+        st.markdown(
+    f"""<div class="output-box">{highlighted_html}</div>""",
+    unsafe_allow_html=True,
+)
+    else:
+        st.markdown(
+            """
+            <div class="output-box"></div>
+            """,
+            unsafe_allow_html=True,
+        )
 
 btn_col1, btn_col2 = st.columns(2, gap="small")
 
