@@ -155,7 +155,6 @@ def replace_separator(formula, sep):
 
 
 def compact_formula(formula, sep):
-    formula = re.sub(r"\s*[,;]\s*", sep + " ", formula)
     formula = re.sub(r"\s+\)", ")", formula)
     formula = re.sub(r"\s+\(", "(", formula)
     formula = re.sub(r"[ \t]+", " ", formula)
