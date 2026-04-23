@@ -401,7 +401,7 @@ div[data-testid="stButton"] > button {
     min-width: 140px !important;
     width: 140px !important;
     height: 40px !important;
-    padding: 0 auto !important;
+    margin: 0 auto !important;   /* ✅ THIS is what centers it */
     border-radius: 999px !important;
     font-size: 16px !important;
     font-weight: 500 !important;
