@@ -345,25 +345,6 @@ st.set_page_config(page_title="Excel Formula Translator", page_icon="logo_xanh.p
 
 st.markdown("""
 <style>
-html,body {overflow-x:hidden!important;}
-[data-testid="stAppViewContainer"] {
-    padding-left:0!important;
-    padding-right:0!important;
-    overflow-x:hidden!important;
-}
-.block-container {
-    max-width:100%!important;
-    padding:1rem 2rem 0 2rem!important;
-    overflow-x:hidden!important;
-}
-section.main {padding-top:0!important;}
-div[data-testid="stHorizontalBlock"] {gap:1rem!important;}
-</style>
-""", unsafe_allow_html=True)
-
-
-st.markdown("""
-<style>
 /* Label */
 div[data-testid="stTextArea"] label {
     color: #111827 !important;
