@@ -393,8 +393,8 @@ div[data-testid="stTextArea"] textarea::placeholder {
 
 /* ===== TRANSLATE BUTTON ===== */
 div[data-testid="stButton"] {
-    display: flex;
-    justify-content: center;
+    display: flex !important;
+    justify-content: center !important;
 }
 
 div[data-testid="stButton"] > button {
