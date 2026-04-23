@@ -393,17 +393,20 @@ div[data-testid="stTextArea"] textarea::placeholder {
 
 /* ===== TRANSLATE BUTTON ===== */
 
+div[data-testid="stButton"] {
+    width: 100% !important;
+    text-align: center !important;
+}
+
 div[data-testid="stButton"] > button {
     width: 140px !important;
     height: 40px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: block !important;
     border-radius: 999px !important;
     font-size: 16px !important;
     font-weight: 500 !important;
-
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-
     background: #3d9e9d !important;
     color: white !important;
     border: none !important;
@@ -548,9 +551,7 @@ with col1:
         key="input_formula_box",
     )
 
-    btn_left, btn_mid, btn_right = st.columns([1, 1, 1])
-    with btn_mid:
-        run = st.button("Translate", type="primary")
+    run = st.button("Translate", type="primary")
 
 with col2:
     st.markdown(
