@@ -544,7 +544,7 @@ with col1:
 
     btn_left, btn_mid, btn_right = st.columns([1, 1, 1])
     with btn_mid:
-        run = st.button("Translate", type="primary", use_container_width=True)
+        run = st.button("Translate", type="primary")
 
 with col2:
     st.markdown(
