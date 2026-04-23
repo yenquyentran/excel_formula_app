@@ -552,10 +552,7 @@ with col1:
         key="input_formula_box",
     )
 
-    # 👇 center button
-    left, center, right = st.columns([1,1,1])
-    with center:
-        run = st.button("Translate", type="primary")
+    run = st.button("Translate", type="primary")
 
 with col2:
     st.markdown(
