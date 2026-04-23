@@ -394,10 +394,16 @@ div[data-testid="stTextArea"] textarea::placeholder {
 /* ===== TRANSLATE BUTTON ===== */
 
 div[data-testid="stButton"] > button {
+    width: 140px !important;
     height: 40px !important;
     border-radius: 999px !important;
     font-size: 16px !important;
     font-weight: 500 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
     background: #3d9e9d !important;
     color: white !important;
     border: none !important;
