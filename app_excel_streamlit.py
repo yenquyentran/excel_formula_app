@@ -395,23 +395,25 @@ div[data-testid="stTextArea"] textarea::placeholder {
 
 div[data-testid="stButton"] {
     width: 100% !important;
-    text-align: center !important;
+    display: flex !important;
+    justify-content: center !important;
 }
 
 div[data-testid="stButton"] > button {
     width: 140px !important;
     height: 40px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    display: block !important;
     border-radius: 999px !important;
     font-size: 16px !important;
     font-weight: 500 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     background: #3d9e9d !important;
     color: white !important;
     border: none !important;
     box-shadow: 0 6px 16px rgba(61, 158, 157, 0.35) !important;
     transition: all 0.2s ease !important;
+    margin: 0 auto !important;
 }
 
 div[data-testid="stButton"] > button:hover {
