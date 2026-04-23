@@ -401,7 +401,7 @@ div[data-testid="stButton"] > button {
     min-width: 140px !important;
     width: 140px !important;
     height: 40px !important;
-    padding: 0 24px !important;
+    padding: 0 auto !important;
     border-radius: 999px !important;
     font-size: 16px !important;
     font-weight: 500 !important;
@@ -553,10 +553,7 @@ with col1:
     )
 
     # 👇 center button
-    left, center, right = st.columns([1,1,1])
-    with center:
-        run = st.button("Translate", type="primary")
-
+    run = st.button("Translate", type="primary", use_container_width=True)
 with col2:
     st.markdown(
         f'<div class="output-label">Translated formula - {tgt}</div>',
