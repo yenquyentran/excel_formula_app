@@ -484,7 +484,7 @@ with open("logo_xanh.png", "rb") as f:
 
 st.markdown(
     f"""
-    <div style="text-align:center; margin-top:10px;">
+    <div style="text-align:center; margin-top:-20px;">
         <img src="data:image/png;base64,{logo_base64}"
              style="width:80px; border-radius:16px;" />
     </div>
@@ -495,7 +495,7 @@ st.markdown(
 st.markdown(
     """
     <h1 style="
-        margin: 10px 0 20px 0;
+        margin: 6px 0 16px 0;
         color: #3d9e9d;
         text-align: center;
     ">
@@ -547,11 +547,15 @@ col1, col2 = st.columns(2, gap="small")
 
 with col1:
     formula = st.text_area(
-         f"Input formula - {src}",
+        f"Input formula - {src}",
         height=HEIGHT,
-        placeholder='Example: =IF(SUM(A1,B1)>10,VLOOKUP(C1,Sheet2!A:B,2,FALSE),"No") \n or: =mid() \n or: today()',
         key="input_formula_box",
     )
+
+    # 👇 center button
+    left, center, right = st.columns([1,1,1])
+    with center:
+        run = st.button("Translate", type="primary")
 
 with col2:
     st.markdown(
@@ -566,27 +570,16 @@ with col2:
         highlighted_html = highlighted.replace("\n", "<br>")
 
         st.markdown(
-    f"""<div class="output-box">{highlighted_html}</div>""",
-    unsafe_allow_html=True,
-)
-    else:
-        st.markdown(
-            """
-            <div class="output-box"></div>
-            """,
+            f"""<div class="output-box">{highlighted_html}</div>""",
             unsafe_allow_html=True,
         )
 
-btn_col1, btn_col2 = st.columns(2, gap="small")
-
-with btn_col1:
-    left_pad, center_btn, right_pad = st.columns([2, 1, 2])
-    with center_btn:
-        run = st.button("Translate", type="primary")
-
-with btn_col2:
-    if st.session_state.translated_result:
         copy_button(st.session_state.translated_result)
+    else:
+        st.markdown(
+            """<div class="output-box"></div>""",
+            unsafe_allow_html=True,
+        )
 
 if run:
     if not formula.strip():
