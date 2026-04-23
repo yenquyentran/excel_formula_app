@@ -392,20 +392,20 @@ div[data-testid="stTextArea"] textarea::placeholder {
 }
 
 /* ===== TRANSLATE BUTTON ===== */
-
 div[data-testid="stButton"] {
-    width: 100% !important;
-    display: flex !important;
-    justify-content: center !important;
+    display: flex;
+    justify-content: center;
 }
 
 div[data-testid="stButton"] > button {
+    min-width: 140px !important;
     width: 140px !important;
     height: 40px !important;
+    padding: 0 24px !important;
     border-radius: 999px !important;
     font-size: 16px !important;
     font-weight: 500 !important;
-    display: flex !important;
+    display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     background: #3d9e9d !important;
@@ -413,7 +413,6 @@ div[data-testid="stButton"] > button {
     border: none !important;
     box-shadow: 0 6px 16px rgba(61, 158, 157, 0.35) !important;
     transition: all 0.2s ease !important;
-    margin: 0 auto !important;
 }
 
 div[data-testid="stButton"] > button:hover {
@@ -553,7 +552,10 @@ with col1:
         key="input_formula_box",
     )
 
-    run = st.button("Translate", type="primary")
+    # 👇 center button
+    left, center, right = st.columns([1,1,1])
+    with center:
+        run = st.button("Translate", type="primary")
 
 with col2:
     st.markdown(
