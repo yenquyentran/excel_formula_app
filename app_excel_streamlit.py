@@ -549,6 +549,7 @@ with col1:
     formula = st.text_area(
         f"Input formula - {src}",
         height=HEIGHT,
+        placeholder='Example: =IF(SUM(A1,B1)>10,VLOOKUP(C1,Sheet2!A:B,2,FALSE),"No") \n or: =mid() \n or: today()',
         key="input_formula_box",
     )
 
